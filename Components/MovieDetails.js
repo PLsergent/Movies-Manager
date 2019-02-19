@@ -1,6 +1,8 @@
 import React from 'react'
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView } from 'react-native'
-import { getMovieDetails } from '../API/TMDBApi'
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image } from 'react-native'
+import { getMovieDetails, getImage } from '../API/TMDBApi'
+import numeral from 'numeral'
+import moment from 'moment'
 
 export default class MovieDetails extends React.Component {
 
@@ -26,7 +28,24 @@ export default class MovieDetails extends React.Component {
     if (movie != undefined) {
       return (
         <ScrollView style={styles.scroll_view}>
-          <Text>{ movie.title }</Text>
+          <Image
+           style={styles.image}
+           source={{uri: getImage(movie.backdrop_path)}}
+          />
+          <Text style={styles.title_movie}>{ movie.title }</Text>
+          <Text style={styles.description_movie}>{ movie.overview }</Text>
+          <Text style={styles.informations_movie}>Release: { moment( movie.release_date ).format('L') }</Text>
+          <Text style={styles.informations_movie}>Rating: { movie.vote_average } / 10</Text>
+          <Text style={styles.informations_movie}>Number of vote: { movie.vote_count }</Text>
+          <Text style={styles.informations_movie}>Budget: {numeral(movie.budget).format('0,0')}$</Text>
+          <Text style={styles.informations_movie}>
+            { movie.genres.length > 1 ? 'Genres' : 'Genre' }
+            : { movie.genres.map((genre) => genre.name).join(" / ")}
+          </Text>
+          <Text style={styles.informations_movie}>
+            { movie.production_companies.length > 1 ? 'Companies' : 'Company' }
+            : { movie.production_companies.map((company) => company.name).join(" / ")}
+          </Text>
         </ScrollView>
       )
     }
@@ -56,6 +75,7 @@ export default class MovieDetails extends React.Component {
 const styles = StyleSheet.create({
   main_container: {
     flex: 1,
+    backgroundColor: '#dbe8ff'
   },
   loading_container: {
     position: 'absolute',
@@ -68,5 +88,28 @@ const styles = StyleSheet.create({
   },
   scroll_view: {
     flex: 1
+  },
+    image: {
+    height: 169,
+    margin: 5
+  },
+  title_movie: {
+    backgroundColor: '#f2f7ff',
+    fontSize: 40,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    margin: 8
+  },
+  description_movie: {
+    color: '#636262',
+    fontSize: 18,
+    fontStyle: 'italic',
+    margin: 5,
+    marginBottom: 10,
+    textAlign: 'justify'
+  },
+  informations_movie: {
+    fontSize: 18,
+    marginLeft: 5
   }
 })
