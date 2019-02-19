@@ -1,30 +1,33 @@
 import React from 'react'
-import { StyleSheet, View, Text, Image } from 'react-native'
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'
 import { getImage } from '../API/TMDBApi'
 
 export default class MovieItem extends React.Component {
 
   render() {
-    const movie = this.props.movie
+    const { movie, displayDetailForMovie } = this.props
+
     return (
-      <View style={styles.main_container}>
+      <TouchableOpacity
+        style={styles.main_container}
+        onPress={() => displayDetailForMovie(movie.id)}>
         <Image
          style={styles.image}
          source={{uri: getImage(movie.poster_path)}}
         />
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.title_text} numberOfLines={2}>{movie.title}</Text>
-            <Text style={styles.rating}>{movie.vote_average}</Text>
+            <Text style={styles.title_text} numberOfLines={2}>{ movie.title }</Text>
+            <Text style={styles.rating}>{ movie.vote_average }</Text>
           </View>
           <View style={styles.description}>
-            <Text style={styles.description_text} numberOfLines={5}>{movie.overview}</Text>
+            <Text style={styles.description_text} numberOfLines={5}>{ movie.overview }</Text>
           </View>
           <View style={styles.date}>
-            <Text style={styles.date_text}>Release : {movie.release_date}</Text>
+            <Text style={styles.date_text}>Release : { movie.release_date }</Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 }

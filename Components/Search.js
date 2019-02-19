@@ -54,7 +54,11 @@ export default class Search extends React.Component {
     })
   }
 
-  _keyExtractor = (item) => item.id.toString();
+  _keyExtractor = (item) => item.id.toString()
+
+  _displayDetailForMovie = (idMovie) => {
+    this.props.navigation.navigate("MovieDetails", { idMovie: idMovie })
+  }
 
   render() {
     return (
@@ -68,7 +72,12 @@ export default class Search extends React.Component {
         <FlatList
             data={this.state.movies}
             keyExtractor={this._keyExtractor}
-            renderItem={({item}) => <MovieItem movie={item} />}
+            renderItem={({item}) =>
+              <MovieItem
+                movie={item}
+                displayDetailForMovie={this._displayDetailForMovie}
+              />
+            }
             onEndReachTreshold={0.5}
             onEndReached={() => {
               if (this.page < this.totalPages) {

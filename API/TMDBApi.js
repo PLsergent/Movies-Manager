@@ -12,3 +12,10 @@ export function getMovies(text, page) {
 export function getImage(name) {
   return 'https://image.tmdb.org/t/p/w300' + name
 }
+
+export function getMovieDetails(id) {
+  const url = 'https://api.themoviedb.org/3/movie/' + id + '?api_key=' + API_TOKEN + '&language=en'
+  return fetch(url)
+    .then((response) => response.json())
+    .catch((error) => console.log(error))
+}
