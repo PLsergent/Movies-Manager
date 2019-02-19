@@ -98,7 +98,9 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     textAlign: 'center',
-    margin: 8
+    margin: 8,
+    flex: 1,
+    flexWrap: 'wrap'
   },
   description_movie: {
     color: '#636262',
