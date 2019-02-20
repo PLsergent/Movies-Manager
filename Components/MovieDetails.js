@@ -1,11 +1,11 @@
 import React from 'react'
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image } from 'react-native'
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { getMovieDetails, getImage } from '../API/TMDBApi'
 import numeral from 'numeral'
 import moment from 'moment'
 import { connect } from 'react-redux'
 
-export default class MovieDetails extends React.Component {
+class MovieDetails extends React.Component {
 
   constructor(props) {
     super(props)
@@ -34,6 +34,11 @@ export default class MovieDetails extends React.Component {
            source={{uri: getImage(movie.backdrop_path)}}
           />
           <Text style={styles.title_movie}>{ movie.title }</Text>
+          <TouchableOpacity
+              style={styles.favorite_container}
+              onPress={() => this._toggleFavorite()}>
+              {this._displayFavoriteImage()}
+          </TouchableOpacity>
           <Text style={styles.description_movie}>{ movie.overview }</Text>
           <Text style={styles.informations_movie}>Release: { moment( movie.release_date ).format('L') }</Text>
           <Text style={styles.informations_movie}>Rating: { movie.vote_average } / 10</Text>
@@ -60,6 +65,24 @@ export default class MovieDetails extends React.Component {
         </View>
       )
     }
+  }
+
+  _toggleFavorite() {
+    const action = { type: "TOGGLE_FAVORITE", value: this.state.movie}
+    this.props.dispatch(action)
+  }
+
+  _displayFavoriteImage() {
+    var sourceImage = require ('../assets/images/favorite_border.png')
+    if (this.props.favoritesMovies.findIndex(item => item.id === this.state.movie.id) !== -1) {
+      sourceImage = require('../assets/images/favorite.png')
+    }
+    return (
+      <Image
+        style={styles.favorite_image}
+        source={sourceImage}
+      />
+    )
   }
 
   render() {
@@ -103,6 +126,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexWrap: 'wrap'
   },
+  favorite_container: {
+    alignItems: 'center'
+  },
+  favorite_image: {
+    width: 40,
+    height: 40
+  },
   description_movie: {
     color: '#636262',
     fontSize: 18,
@@ -117,5 +147,9 @@ const styles = StyleSheet.create({
   }
 })
 
-const mapStateToProps = (state) => favoritesMovies: state.favoritesMovies
-connect(mapStateToProps)(MovieDetails)
+const mapStateToProps = (state) => {
+  return {
+    favoritesMovies: state.favoritesMovies
+  }
+}
+export default connect(mapStateToProps)(MovieDetails)
