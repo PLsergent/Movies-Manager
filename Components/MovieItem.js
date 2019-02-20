@@ -4,6 +4,17 @@ import { getImage } from '../API/TMDBApi'
 
 export default class MovieItem extends React.Component {
 
+  _displayFavoriteImage() {
+    if (this.props.isMovieFavorite) {
+      return (
+        <Image
+          style={styles.favorite_image}
+          source={require('../assets/images/favorite.png')}
+        />
+      )
+    }
+  }
+
   render() {
     const { movie, displayDetailForMovie } = this.props
 
@@ -17,6 +28,7 @@ export default class MovieItem extends React.Component {
         />
         <View style={styles.content}>
           <View style={styles.header}>
+            {this._displayFavoriteImage()}
             <Text style={styles.title_text} numberOfLines={2}>{ movie.title }</Text>
             <Text style={styles.rating}>{ movie.vote_average }</Text>
           </View>
@@ -82,5 +94,10 @@ const styles = StyleSheet.create({
     },
       date_text: {
         textAlign: 'right'
-      }
+      },
+  favorite_image: {
+  width: 25,
+  height: 25,
+  marginRight: 5
+  }
 })
