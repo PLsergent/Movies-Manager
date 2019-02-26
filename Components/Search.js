@@ -1,10 +1,10 @@
-import React from "react"
-import { StyleSheet, View, TextInput, Button, FlatList, Text, ActivityIndicator } from "react-native"
+import React from 'react'
+import { StyleSheet, View, TextInput, Button, Text, FlatList, ActivityIndicator } from 'react-native'
 import MovieItem from './MovieItem'
+import MovieList from './MovieList'
 import { getMovies } from '../API/TMDBApi'
-import { connect } from 'react-redux'
 
-class Search extends React.Component {
+export default class Search extends React.Component {
 
   constructor(props) {
     super(props)
@@ -17,32 +17,22 @@ class Search extends React.Component {
     }
   }
 
-  _displayLoading() {
-    if (this.state.isLoading) {
-      return (
-        <View style={styles.loading_container}>
-            <ActivityIndicator size='large' />
-        </View>
-      )
-    }
-  }
-
-  _loadMovies() {
-    if (this.searchedText.length > 0){
+  _loadMovies = () => {
+    if (this.searchedText.length > 0) {
       this.setState({ isLoading: true })
       getMovies(this.searchedText, this.page+1).then(data => {
-        this.page = data.page
-        this.totalPages = data.total_pages
-        this.setState({
-          movies: [ ...this.state.movies, ...data.results ],
-          isLoading: false
-        })
+          this.page = data.page
+          this.totalPages = data.total_pages
+          this.setState({
+            movies: [ ...this.state.movies, ...data.results ],
+            isLoading: false
+          })
       })
     }
   }
 
   _searchTextInputChanged(text) {
-        this.searchedText = text
+    this.searchedText = text
   }
 
   _searchMovies() {
@@ -51,47 +41,37 @@ class Search extends React.Component {
     this.setState({
       movies: [],
     }, () => {
-      this._loadMovies()
+        this._loadMovies()
     })
   }
 
-  _keyExtractor = (item) => item.id.toString()
-
-  _displayDetailForMovie = (idMovie) => {
-    this.props.navigation.navigate("MovieDetails", { idMovie: idMovie })
-  }
-
-  _isMovieFavorite(item) {
-    return this.props.favoritesMovies.findIndex(
-      movie => movie.id === item.id) !== -1 ? true : false
+  _displayLoading() {
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.loading_container}>
+          <ActivityIndicator size='large' />
+        </View>
+      )
+    }
   }
 
   render() {
     return (
       <View style={styles.main_container}>
-        <TextInput style={styles.textinput}
-          onSubmitEditing={() => this._searchMovies()}
+        <TextInput
+          style={styles.textinput}
           placeholder='Movie title'
           onChangeText={(text) => this._searchTextInputChanged(text)}
+          onSubmitEditing={() => this._searchMovies()}
         />
-        <Button title='Search' onPress={() => this._searchMovies()}/>
-        <FlatList
-            data={this.state.movies}
-            keyExtractor={this._keyExtractor}
-            extraData={this.props.favoritesMovies}
-            renderItem={({item}) =>
-              <MovieItem
-                movie={item}
-                isMovieFavorite={this._isMovieFavorite(item)}
-                displayDetailForMovie={this._displayDetailForMovie}
-              />
-            }
-            onEndReachTreshold={0.5}
-            onEndReached={() => {
-              if (this.page < this.totalPages) {
-                this._loadMovies()
-              }
-            }}
+      <Button title='Search' onPress={() => this._searchMovies()}/>
+        <MovieList
+          movies={this.state.movies}
+          navigation={this.props.navigation}
+          loadMovies={this._loadMovies}
+          page={this.page}
+          totalPages={this.totalPages}
+          favoriteList={false}
         />
         {this._displayLoading()}
       </View>
@@ -101,12 +81,11 @@ class Search extends React.Component {
 
 const styles = StyleSheet.create({
   main_container: {
-    flex: 1,
+    flex: 1
   },
   textinput: {
     marginLeft: 5,
     marginRight: 5,
-    marginBottom: 5,
     height: 50,
     borderColor: '#000000',
     borderWidth: 1,
@@ -122,10 +101,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 })
-
-const mapStateToProps = (state) => {
-  return {
-    favoritesMovies: state.favoritesMovies
-  }
-}
-export default connect(mapStateToProps)(Search)

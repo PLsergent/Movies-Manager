@@ -16,6 +16,20 @@ class MovieDetails extends React.Component {
   }
 
   componentDidMount() {
+    const favoriteMovieIndex = this.props.favoritesMovies.findIndex(
+      item => item.id === this.props.navigation.state.params.idMovie
+    )
+    if (favoriteMovieIndex !== -1) { // Film déjà dans nos favoris, on a déjà son détail
+      // Pas besoin d'appeler l'API ici, on ajoute le détail stocké dans notre state global au state de notre component
+      this.setState({
+        movie: this.props.favoritesMovies[favoriteMovieIndex],
+        isLoading: false
+      })
+      return
+    }
+    // Le film n'est pas dans nos favoris, on n'a pas son détail
+    // On appelle l'API pour récupérer son détail
+    this.setState({ isLoading: true })
     getMovieDetails(this.props.navigation.state.params.idMovie).then(data => {
       this.setState({
         movie: data,
