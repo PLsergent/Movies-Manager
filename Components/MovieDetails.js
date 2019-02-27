@@ -1,5 +1,14 @@
 import React from 'react'
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet,
+         View,
+         Text,
+         ActivityIndicator,
+         ScrollView,
+         Image,
+         TouchableOpacity,
+         Share,
+         Platform
+       } from 'react-native'
 import { getMovieDetails, getImage } from '../API/TMDBApi'
 import numeral from 'numeral'
 import moment from 'moment'
@@ -99,12 +108,33 @@ class MovieDetails extends React.Component {
     )
   }
 
+  _shareMovie() {
+    const { movie } = this.state
+    Share.share({ title: movie.title, message: movie.overview })
+  }
+
+  _displayActionButton() {
+    const { movie } = this.state
+    if (movie != undefined && Platform.OS === 'android') {
+      return (
+        <TouchableOpacity
+          style={styles.share_touchable_button}
+          onPress={() => this._shareMovie()}>
+          <Image
+            style={styles.share_image}
+            source={require('../assets/images/share.png')} />
+        </TouchableOpacity>
+      )
+    }
+  }
+
   render() {
     const idMovie = this.props.navigation.state.params.idMovie
     return (
       <View style={styles.main_container}>
         {this._displayMovie()}
         {this._displayLoading()}
+        {this._displayActionButton()}
       </View>
     )
   }
@@ -158,6 +188,21 @@ const styles = StyleSheet.create({
   informations_movie: {
     fontSize: 18,
     marginLeft: 5
+  },
+  share_touchable_button: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    right: 30,
+    bottom: 30,
+    borderRadius: 30,
+    backgroundColor: '#4286f4',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  share_image: {
+    width: 30,
+    height: 30
   }
 })
 
