@@ -13,6 +13,7 @@ import { getMovieDetails, getImage } from '../API/TMDBApi'
 import numeral from 'numeral'
 import moment from 'moment'
 import { connect } from 'react-redux'
+import EnlargeShrink from '../Animations/EnlargeShrink'
 
 class MovieDetails extends React.Component {
 
@@ -28,7 +29,7 @@ class MovieDetails extends React.Component {
     const favoriteMovieIndex = this.props.favoritesMovies.findIndex(
       item => item.id === this.props.navigation.state.params.idMovie
     )
-    if (favoriteMovieIndex !== -1) { // Film déjà dans nos favoris, on a déjà son détail
+    if (favoriteMovieIndex !== -1) { // Movie déjà dans nos favoris, on a déjà son détail
       // Pas besoin d'appeler l'API ici, on ajoute le détail stocké dans notre state global au state de notre component
       this.setState({
         movie: this.props.favoritesMovies[favoriteMovieIndex],
@@ -36,7 +37,7 @@ class MovieDetails extends React.Component {
       })
       return
     }
-    // Le film n'est pas dans nos favoris, on n'a pas son détail
+    // Le movie n'est pas dans nos favoris, on n'a pas son détail
     // On appelle l'API pour récupérer son détail
     this.setState({ isLoading: true })
     getMovieDetails(this.props.navigation.state.params.idMovie).then(data => {
@@ -96,15 +97,20 @@ class MovieDetails extends React.Component {
   }
 
   _displayFavoriteImage() {
-    var sourceImage = require ('../assets/images/favorite_border.png')
+    var sourceImage = require('../assets/images/favorite_border.png')
+    var shouldEnlarge = false
     if (this.props.favoritesMovies.findIndex(item => item.id === this.state.movie.id) !== -1) {
       sourceImage = require('../assets/images/favorite.png')
+      shouldEnlarge = true
     }
     return (
-      <Image
-        style={styles.favorite_image}
-        source={sourceImage}
-      />
+      <EnlargeShrink
+        shouldEnlarge={shouldEnlarge}>
+        <Image
+          style={styles.favorite_image}
+          source={sourceImage}
+        />
+      </EnlargeShrink>
     )
   }
 
@@ -173,9 +179,10 @@ const styles = StyleSheet.create({
   favorite_container: {
     alignItems: 'center'
   },
-  favorite_image: {
-    width: 40,
-    height: 40
+  favorite_image:{
+    flex: 1,
+    width: null,
+    height: null
   },
   description_movie: {
     color: '#636262',
